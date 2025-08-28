@@ -21,8 +21,10 @@ spec:
         - name: SRV_RUN
           value: WWW
         - name: AMQP_HOST
-          value: rabbitmq.default.svc.cluster.local
-        - name: AMQP_USER
+          value: rabbitmq
+        - name: AMQP_PORT
+          value: "5672"
+        - name: AMQP_USERNAME
           valueFrom:
             secretKeyRef:
               name: rabbitmq
@@ -33,8 +35,12 @@ spec:
               name: rabbitmq
               key: rabbitmq-password
         - name: DB_HOST
-          # value: o2.postgres.default.svc.cluster.local
-          value: "$(POSTGRES_PORT_5432_TCP_ADDR)"
+          value: postgres
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: database
         - name: DB_USER
           valueFrom:
             secretKeyRef:
@@ -46,39 +52,30 @@ spec:
               name: postgres
               key: password
         - name: REDIS_HOST
-          value: redis.default.svc.cluster.local
+          value: redis
         - name: REDIS_PORT
-          value: '6379'
-        - name: GA_ACCOUNT
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: GA_ACCOUNT
-        - name: GA_DOMAIN
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: GA_DOMAIN
+          value: "6379"
         - name: HOST_NAME
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: HOST_NAME
-        - name: HOST_STATIC
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: HOST_STATIC
-        - name: JASPER_URL
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: JASPER_URL
-        - name: KEY_SALT
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: KEY_SALT
+          value: observer.maprox.net
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: HOST_NAME
+        # - name: HOST_STATIC
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: HOST_STATIC
+        # - name: JASPER_URL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: JASPER_URL
+        # - name: KEY_SALT
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: KEY_SALT
         # - name: NODE_HOST
         #   valueFrom:
         #     secretKeyRef:
@@ -89,71 +86,71 @@ spec:
         #     secretKeyRef:
         #       name: web
         #       key: NODE_HOST_SSL
-        - name: OTHER_IP
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: OTHER_IP
-        - name: RBKM_IDSHOP
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: RBKM_IDSHOP
-        - name: RBKM_KEY
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: RBKM_KEY
-        - name: RBKM_WALLET
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: RBKM_WALLET
-        - name: REGISTER_URL
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: REGISTER_URL
-        - name: SMSPILOT_KEY
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: SMSPILOT_KEY
-        - name: SMSTEAM_KEY
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: SMSTEAM_KEY
-        - name: SMSTEAM_LOGIN
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: SMSTEAM_LOGIN
-        - name: SMSTEAM_PASS
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: SMSTEAM_PASS
-        - name: SMTP_HOST
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: SMTP_HOST
-        - name: SMTP_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: SMTP_PASSWORD
-        - name: SMTP_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: SMTP_USERNAME
-        - name: YM_ID
-          valueFrom:
-            secretKeyRef:
-              name: web
-              key: YM_ID
+        # - name: OTHER_IP
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: OTHER_IP
+        # - name: RBKM_IDSHOP
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: RBKM_IDSHOP
+        # - name: RBKM_KEY
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: RBKM_KEY
+        # - name: RBKM_WALLET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: RBKM_WALLET
+        # - name: REGISTER_URL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: REGISTER_URL
+        # - name: SMSPILOT_KEY
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: SMSPILOT_KEY
+        # - name: SMSTEAM_KEY
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: SMSTEAM_KEY
+        # - name: SMSTEAM_LOGIN
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: SMSTEAM_LOGIN
+        # - name: SMSTEAM_PASS
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: SMSTEAM_PASS
+        # - name: SMTP_HOST
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: SMTP_HOST
+        # - name: SMTP_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: SMTP_PASSWORD
+        # - name: SMTP_USERNAME
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: SMTP_USERNAME
+        # - name: YM_ID
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: YM_ID
         ports:
         - containerPort: 80
         resources:
@@ -186,8 +183,8 @@ kind: Ingress
 metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
-    nginx.ingress.kubernetes.io/redirect-entry-point: https
-  name: o2-ingress
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: o2-web-ingress
   namespace: o2
 spec:
   ingressClassName: nginx
@@ -205,4 +202,4 @@ spec:
   tls:
   - hosts:
       - observer.maprox.net
-    secretName: letsencrypt
+    secretName: observer-maprox-net

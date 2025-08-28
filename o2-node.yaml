@@ -80,6 +80,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/websocket-services: "node"
+    nginx.ingress.kubernetes.io/priority: "100"
   name: o2-node-ingress
   namespace: o2
 spec:
@@ -93,7 +94,7 @@ spec:
               name: node
               port:
                 number: 3000
-          path: /
+          path: /node-websocket
           pathType: Prefix
   tls:
   - hosts:
