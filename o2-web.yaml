@@ -1,0 +1,208 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: o2
+  name: web
+  labels:
+    app: web
+spec:
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: maprox/o2-web
+        env:
+        - name: SRV_RUN
+          value: WWW
+        - name: AMQP_HOST
+          value: rabbitmq.default.svc.cluster.local
+        - name: AMQP_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-user
+        - name: AMQP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-password
+        - name: DB_HOST
+          # value: o2.postgres.default.svc.cluster.local
+          value: "$(POSTGRES_PORT_5432_TCP_ADDR)"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: password
+        - name: REDIS_HOST
+          value: redis.default.svc.cluster.local
+        - name: REDIS_PORT
+          value: '6379'
+        - name: GA_ACCOUNT
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: GA_ACCOUNT
+        - name: GA_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: GA_DOMAIN
+        - name: HOST_NAME
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: HOST_NAME
+        - name: HOST_STATIC
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: HOST_STATIC
+        - name: JASPER_URL
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: JASPER_URL
+        - name: KEY_SALT
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: KEY_SALT
+        # - name: NODE_HOST
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: NODE_HOST
+        # - name: NODE_HOST_SSL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: web
+        #       key: NODE_HOST_SSL
+        - name: OTHER_IP
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: OTHER_IP
+        - name: RBKM_IDSHOP
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: RBKM_IDSHOP
+        - name: RBKM_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: RBKM_KEY
+        - name: RBKM_WALLET
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: RBKM_WALLET
+        - name: REGISTER_URL
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: REGISTER_URL
+        - name: SMSPILOT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: SMSPILOT_KEY
+        - name: SMSTEAM_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: SMSTEAM_KEY
+        - name: SMSTEAM_LOGIN
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: SMSTEAM_LOGIN
+        - name: SMSTEAM_PASS
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: SMSTEAM_PASS
+        - name: SMTP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: SMTP_HOST
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: SMTP_PASSWORD
+        - name: SMTP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: SMTP_USERNAME
+        - name: YM_ID
+          valueFrom:
+            secretKeyRef:
+              name: web
+              key: YM_ID
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: o2
+  name: web
+  labels:
+    app: web
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: web
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/redirect-entry-point: https
+  name: o2-ingress
+  namespace: o2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: observer.maprox.net
+    http:
+      paths:
+        - backend:
+            service:
+              name: web
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+  tls:
+  - hosts:
+      - observer.maprox.net
+    secretName: letsencrypt

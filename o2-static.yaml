@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: o2
+  name: static
+  labels:
+    app: static
+spec:
+  selector:
+    matchLabels:
+      app: static
+  template:
+    metadata:
+      labels:
+        app: static
+    spec:
+      containers:
+      - name: static
+        image: maprox/static
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: o2
+  name: static
+  labels:
+    app: static
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: static
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: o2-static-ingress
+  namespace: o2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: static.maprox.net
+    http:
+      paths:
+        - backend:
+            service:
+              name: static
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+  tls:
+  - hosts:
+      - static.maprox.net
+    secretName: static-maprox-net

@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: o2
+  name: node
+  labels:
+    app: node
+spec:
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+      - name: node
+        image: maprox/node
+        env:
+        - name: NODE_ENV
+          value: "prod"
+        - name: PORT
+          value: "3000"
+        - name: AMQP_HOST
+          value: rabbitmq
+        - name: AMQP_PORT
+          value: "5672"
+        - name: AMQP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-user
+        - name: AMQP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-password
+        - name: REDIS_CONNECT_URL
+          value: "redis://redis:6379"
+        - name: OBSERVER_DATA_URL
+          value: "https://observer.maprox.net/node/data"
+        - name: OBSERVER_AUTH_URL
+          value: "https://observer.maprox.net/node/auth"
+        ports:
+        - containerPort: 3000
+          hostPort: 3000
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: o2
+  name: node
+  labels:
+    app: node
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: node
+  selector:
+    app: node
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "node"
+  name: o2-node-ingress
+  namespace: o2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: observer.maprox.net
+    http:
+      paths:
+        - backend:
+            service:
+              name: node
+              port:
+                number: 3000
+          path: /
+          pathType: Prefix
+  tls:
+  - hosts:
+      - observer.maprox.net
+    secretName: observer-maprox-net

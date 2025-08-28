@@ -1,0 +1,64 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  namespace: o2
+  name: letsencrypt
+spec:
+  acme:
+    # The ACME server URL
+    #server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # You must replace this email address with your own.
+    # Let's Encrypt will use this to contact you about expiring
+    # certificates, and issues related to your account.
+    email: z@sunsay.ru
+    privateKeySecretRef:
+      # Secret resource that will be used to store the account's private key.
+      name: issuer-account-key
+    # Enable the HTTP-01 challenge provider
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: o2
+  name: o2-ingress-rabbitmq
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  tls:
+  - hosts:
+    - o2-rabbitmq.primne.com
+    secretName: o2-rabbitmq-primne-com
+  rules:
+  - host: o2-rabbitmq.primne.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rabbitmq
+            port:
+              number: 15672
+---
+# Удалить при переезде на k8s
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: o2
+  name: o2-rabbitmq
+spec:
+  ports:
+    - name: o2-rabbitmq
+      nodePort: 32672
+      port: 5672
+      protocol: TCP
+      targetPort: 5672
+  selector:
+    app.kubernetes.io/name: rabbitmq
+  type: NodePort
