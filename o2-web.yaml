@@ -36,6 +36,8 @@ spec:
               key: rabbitmq-password
         - name: DB_HOST
           value: postgres
+        - name: DB_PORT
+          value: "5432"
         - name: DB_NAME
           valueFrom:
             secretKeyRef:
@@ -57,100 +59,10 @@ spec:
           value: "6379"
         - name: HOST_NAME
           value: observer.maprox.net
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: HOST_NAME
-        # - name: HOST_STATIC
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: HOST_STATIC
-        # - name: JASPER_URL
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: JASPER_URL
-        # - name: KEY_SALT
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: KEY_SALT
-        # - name: NODE_HOST
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: NODE_HOST
-        # - name: NODE_HOST_SSL
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: NODE_HOST_SSL
-        # - name: OTHER_IP
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: OTHER_IP
-        # - name: RBKM_IDSHOP
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: RBKM_IDSHOP
-        # - name: RBKM_KEY
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: RBKM_KEY
-        # - name: RBKM_WALLET
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: RBKM_WALLET
-        # - name: REGISTER_URL
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: REGISTER_URL
-        # - name: SMSPILOT_KEY
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: SMSPILOT_KEY
-        # - name: SMSTEAM_KEY
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: SMSTEAM_KEY
-        # - name: SMSTEAM_LOGIN
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: SMSTEAM_LOGIN
-        # - name: SMSTEAM_PASS
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: SMSTEAM_PASS
-        # - name: SMTP_HOST
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: SMTP_HOST
-        # - name: SMTP_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: SMTP_PASSWORD
-        # - name: SMTP_USERNAME
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: SMTP_USERNAME
-        # - name: YM_ID
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: web
-        #       key: YM_ID
+        - name: URL_STATIC
+          value: https://static.maprox.net
+        - name: URL_NODE
+          value: https://observer.maprox.net/node-websocket
         ports:
         - containerPort: 80
         resources:
