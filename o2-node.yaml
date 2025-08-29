@@ -77,16 +77,19 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/websocket-services: "node"
-    nginx.ingress.kubernetes.io/priority: "100"
+    # CORS настройки для *.maprox.net
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://*.maprox.net,https://maprox.net"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
   name: o2-node-ingress
   namespace: o2
 spec:
   ingressClassName: nginx
   rules:
-  - host: observer.maprox.net
+  - host: socket.maprox.net
     http:
       paths:
         - backend:
@@ -94,9 +97,9 @@ spec:
               name: node
               port:
                 number: 3000
-          path: /node-websocket
+          path: /
           pathType: Prefix
   tls:
   - hosts:
-      - observer.maprox.net
-    secretName: observer-maprox-net
+      - socket.maprox.net
+    secretName: socket-maprox-net

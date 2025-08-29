@@ -62,7 +62,7 @@ spec:
         - name: URL_STATIC
           value: https://static.maprox.net
         - name: URL_NODE
-          value: https://observer.maprox.net/node-websocket
+          value: https://socket.maprox.net
         ports:
         - containerPort: 80
         resources:
