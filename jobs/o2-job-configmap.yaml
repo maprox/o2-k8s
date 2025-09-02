@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: job-config
+  namespace: o2
+data:
+  JOB_ENVIRONMENT: "prod"
+  JOB_HOSTNAME: "observer.maprox.net"
+
