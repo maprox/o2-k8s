@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: o2
+  name: job-geofence-presence
+  labels:
+    app: job-geofence-presence
+spec:
+  selector:
+    matchLabels:
+      app: job-geofence-presence
+  template:
+    metadata:
+      labels:
+        app: job-geofence-presence
+    spec:
+      containers:
+      - name: job-geofence-presence
+        image: maprox/observer-job-geofence-presence
+        env:
+        - name: AMQP_HOST
+          value: rabbitmq
+        - name: AMQP_PORT
+          value: "5672"
+        - name: AMQP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-user
+        - name: AMQP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-password
+        - name: REDIS_CONNECT_URL
+          value: "redis://redis:6379"
+        - name: PGHOST
+          value: postgres
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: database
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: password
+        - name: AMQP_EXCHANGE
+          value: mon.device
+        - name: AMQP_QUEUE_NAME
+          value: prod.mon.device.geofence.update.onpacket
+        - name: AMQP_QUEUE_ROUTING_KEY
+          value: prod.mon.device.geofence.update.onpacket
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 1Gi
