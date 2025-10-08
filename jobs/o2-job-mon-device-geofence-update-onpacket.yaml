@@ -38,10 +38,10 @@ spec:
           value: prod.mon.device.geofence.update.onpacket
         - name: AMQP_QUEUE_ROUTING_KEY
           value: prod.mon.device.geofence.update.onpacket
-        - name: AMQP_NOTIFICATION_EXCHANGE
-          value: x_notification
-        - name: AMQP_NOTIFICATION_ROUTING_KEY
-          value: prod.x_notification.notification.process.onpacket
+        - name: AMQP_OUTBOUND_EXCHANGE
+          value: x.notification
+        - name: AMQP_OUTBOUND_ROUTING_KEY
+          value: prod.x.notification.notification.process.onpacket
         - name: AMQP_MESSAGES_COUNT_LIMIT
           value: "10"
         - name: PGHOST

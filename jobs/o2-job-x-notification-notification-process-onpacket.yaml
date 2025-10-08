@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: o2
+  name: job-x-notification-notification-process-onpacket
+  labels:
+    app: job-x-notification-notification-process-onpacket
+spec:
+  selector:
+    matchLabels:
+      app: job-x-notification-notification-process-onpacket
+  template:
+    metadata:
+      labels:
+        app: job-x-notification-notification-process-onpacket
+    spec:
+      containers:
+      - name: job-x-notification-notification-process-onpacket
+        image: maprox/o2-web
+        env:
+        - name: SRV_RUN
+          value: JOB
+        - name: JOB_START
+          value: x_notification
+        - name: JOB_KEY
+          value: notification.process.onpacket
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: job-config
+              key: JOB_ENVIRONMENT
+        - name: HOST_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: job-config
+              key: JOB_HOSTNAME
+        - name: AMQP_HOST
+          value: rabbitmq
+        - name: AMQP_PORT
+          value: "5672"
+        - name: AMQP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-user
+        - name: AMQP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-password
+        - name: DB_HOST
+          value: postgres
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: database
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: password
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 1Gi

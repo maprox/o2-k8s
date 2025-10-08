@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: o2
+  name: job-telegrembo
+  labels:
+    app: job-telegrembo
+spec:
+  selector:
+    matchLabels:
+      app: job-telegrembo
+  template:
+    metadata:
+      labels:
+        app: job-telegrembo
+    spec:
+      containers:
+      - name: job-telegrembo
+        image: maprox/telegrembo
+        env:
+        - name: AMQP_HOST
+          value: rabbitmq
+        - name: AMQP_PORT
+          value: "5672"
+        - name: AMQP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-user
+        - name: AMQP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-password
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: telegrembo
+              key: token
+        - name: AMQP_EXCHANGE
+          value: n.work
+        - name: AMQP_QUEUE_NAME
+          value: prod.n.work.telegram.send
+        - name: AMQP_QUEUE_ROUTING_KEY
+          value: prod.n.work.telegram.send
+        resources:
+          limits:
+            cpu: 250m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 512Mi
